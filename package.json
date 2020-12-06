@@ -1,0 +1,23 @@
+{
+  "name": "squareToPrinters",
+  "version": "1.0.0",
+  "description": "square to printer",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.21.0",
+    "body-parse": "^0.1.0",
+    "body-parser": "^1.19.0",
+    "cheerio": "^1.0.0-rc.3",
+    "express": "^4.17.1",
+    "fs": "0.0.1-security",
+    "googleapis": "^65.0.0",
+    "js-base64": "^3.6.0",
+    "readline": "^1.3.0",
+    "square": "^7.0.0"
+  }
+}

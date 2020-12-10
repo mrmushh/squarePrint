@@ -15,7 +15,6 @@ const SCOPES = [
 ];
 
 const TOKEN_PATH = 'token.json'
-
 var SQUARE_MENU = [];
 
 //get menu from sheets
@@ -29,7 +28,6 @@ const client = new Client({
   environment: Environment.Production,
   accessToken: process.env.SQUARE_ACCESS_TOKEN,
 })
-
 
 //instance of square's order api
 const { ordersApi } = client
@@ -51,9 +49,10 @@ app.post("/", (req, res) => {
   //MAKE SURE TO ADD CHECK SO NO TWO PAYMENT UPDATES!!!
   if( (req.body.type === "payment.updated") ) {
     let shippingAddress =  req.body.data.object.payment.shipping_address;
+    let emailAddress = req.body.data.object.payment.buyer_email_address;
     let postedOrderId = req.body.data.object.payment.order_id
     // Call your action on the request here
-    var myOrder = getOrderById(postedOrderId, shippingAddress)
+    var myOrder = getOrderById(postedOrderId, shippingAddress, emailAddress)
     const myLineItems = myOrder.then( res => getLineItems(res))
     const myReceiptBody = myLineItems.then( res => makeReceiptBody(res))
   }
@@ -65,10 +64,11 @@ app.get("/", (req,res) => {
   res.status(200).end()
 })
 
-const getOrderById = async (orderId, shippingInfo) => {
+const getOrderById = async (orderId, shippingInfo, emailAddress) => {
   try {
     let response = await client.ordersApi.retrieveOrder(orderId);
     response.result.order.myShippingAddress = shippingInfo;
+    response.result.order.myEmailAddress = emailAddress;
     return response
   } catch(error) {
     if (error instanceof ApiError){
@@ -154,10 +154,10 @@ const makeReceiptBody = async (orderObj) => {
     // fill in puckup information
     let placed = '';
     let pickup;
-    let recipient_name = 'Unknown';
-    let recipient_phone = 'Unknown';
+    let recipient_name = '';
+    let recipient_phone = '';
     let shipping_address = '';
-    console.log(orderObj.result.order.fulfillments);
+    //console.log(orderObj.result.order.fulfillments);
 
     if (typeof orderObj.result.order.fulfillments !== "undefined"){
       if (orderObj.result.order.fulfillments[0].type === "PICKUP"){
@@ -167,7 +167,6 @@ const makeReceiptBody = async (orderObj) => {
         placed = new Date(Date.parse(placed));
 
         if (orderObj.result.order.fulfillments[0].pickupDetails.scheduleType === "SCHEDULED"){
-          console.log("got here");
           pickup = "<strong>WAIT TO MAKE ORDER!</strong>";
         }else{
           pickup = new Date(Date.parse(placed));
@@ -184,7 +183,7 @@ const makeReceiptBody = async (orderObj) => {
         }
       }else if (orderObj.result.order.fulfillments[0].type === "DELIVERY"){
         shipping_address = orderObj.result.order.myShippingAddress.address_line_1 + ", " + orderObj.result.order.myShippingAddress.administrative_district_level_1;
-        console.log(shipping_address);
+        //console.log(shipping_address);
         placed = orderObj.result.order.createdAt;
         pickup = new Date(Date.parse(placed));
         pickup = pickup.getTime() + 20*60000; //20 minutes to prepare
@@ -193,16 +192,35 @@ const makeReceiptBody = async (orderObj) => {
       }
       console.log(`Placed at: ${placed}, Ready by: ${pickup}, Name: ${recipient_name}, Phone: ${recipient_phone}`);
     }
-    const customer = await client.customersApi.searchCustomers({
-      query : {
+    /*
+    var mySearch = {
+      query : { 
         filter : {
           emailAddress: {
-            fuzzy : 'ben_uii@hotmail.com'
+            exact : ""
           }
         }
       }
-    });
+    };
+    mySearch.query.filter.emailAddress.exact = orderObj.result.order.myEmailAddress;
+    console.log(mySearch.query.filter.emailAddress.exact);
+    const customer = await client.customersApi.searchCustomers(mySearch);
+
     console.log(customer);
+    console.log(customer.result);
+    if(typeof customer.result !== "undefined"){
+      if(typeof customer.result.customers !== "undefined"){
+        recipient_name = customer.result.customers[0].givenName + " " + customer.result.customers[0].familyName;
+        recipient_phone = customer.result.customers[0].phoneNumber;
+      }
+      if (typeof recipient_phone !== "undefined"){
+        if (recipient_phone.length >= 10){
+          recipient_phone = recipient_phone.substring(recipient_phone.length - 10);
+          recipient_phone = '(' + recipient_phone.substring(0,3) + ')' + recipient_phone.substring(3,6) + '-' + recipient_phone.substring(6);
+        }
+      }
+    }
+    */
 
     let customer_info =`
       <h3>
@@ -213,7 +231,6 @@ const makeReceiptBody = async (orderObj) => {
       <p> Placed at: ${placed} </p> 
       <p> Ready by: ${pickup} </p>
     `;
-    console.log(customer_info);
     let header = `
       <!DOCTYPE html>
       <html>
@@ -236,6 +253,7 @@ const makeReceiptBody = async (orderObj) => {
         orderObj.result.order.receipts[i] = header + orderObj.result.order.receipts[i] + footer;
       }
     }
+    console.log(orderObj.result.order.receipts.foodrun);
     var postData = {
       orderId: 'square',
       foodrunHTML: '',
@@ -243,17 +261,20 @@ const makeReceiptBody = async (orderObj) => {
       appHTML: '',
       dessertHTML: ''
     }
-    postData.foodrunHTML = orderObj.result.order.receipts.foodrun += "<h1>DO NOT MAKE</h1>";
+    //postData.foodrunHTML = orderObj.result.order.receipts.foodrun += "<h1>DO NOT MAKE</h1>";
     postData.entreeHTML = orderObj.result.order.receipts.entree += "<h1>DO NOT MAKE</h1>";
     postData.appHTML = orderObj.result.order.receipts.app += "<h1>DO NOT MAKE</h1>";
     postData.dessertHTML = orderObj.result.order.receipts.dessert += "<h1>DO NOT MAKE</h1>";
     /*
+
     axios
       .post('https://hook.integromat.com/5ak4j9t3v9n66dvnj0859q5hguq3vc31', postData)
       .catch(function (error) {
         console.log(error);
       });
     */
+
+
     //console.log(orderObj.result.order);
 
     //console.log(postData);

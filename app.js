@@ -265,15 +265,17 @@ const makeReceiptBody = async (orderObj) => {
     }
     //postData.foodrunHTML = orderObj.result.order.receipts.foodrun;
 
-    if (orderObj.result.order.fulfillments[0].pickupDetails.scheduleType === "SCHEDULED"){
-      postData.foodrunHTML = `
-        <h4>
-        <p>Order scheduled for:</p>
-        <p><strong>${recipient_name}.</strong></p>
-        <p>Wait to make order!</p>
-        </h4>
-      `;
-      postData.foodrunHTML = header + postData.foodrunHTML + footer;
+    if (typeof orderObj.result.order.fulfillments[0].pickupDetails !== 'undefined'){
+      if (orderObj.result.order.fulfillments[0].pickupDetails.scheduleType === "SCHEDULED"){
+        postData.foodrunHTML = `
+          <h4>
+          <p>Order scheduled for:</p>
+          <p><strong>${recipient_name}.</strong></p>
+          <p>Wait to make order!</p>
+          </h4>
+        `;
+        postData.foodrunHTML = header + postData.foodrunHTML + footer;
+      }
     }
     postData.entreeHTML = orderObj.result.order.receipts.entree;
     postData.appHTML = orderObj.result.order.receipts.app;

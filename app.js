@@ -82,7 +82,6 @@ const getOrderById = async (orderId, shippingInfo, emailAddress) => {
 const getLineItems = async (orderObj) => {
   try {
     for (lineItem of orderObj.result.order.lineItems) {
-      console.log(orderObj); 
       let sheetItem = SQUARE_MENU.find(element => element.name === lineItem.name.toUpperCase())
       if(typeof sheetItem === "undefined"){
         lineItem.printer = '';
@@ -152,6 +151,7 @@ const makeReceiptBody = async (orderObj) => {
       }            
     }
     orderObj.result.order.receipts = receipts;
+    //console.log(orderObj.result.order.receipts);
     // fill in puckup information
     let placed = '';
     let pickup;
@@ -248,13 +248,14 @@ const makeReceiptBody = async (orderObj) => {
       </body>
       </html>
     `;
+
     for(let i in orderObj.result.order.receipts){
       if(orderObj.result.order.receipts[i] !== ''){
         orderObj.result.order.receipts[i] = customer_info + printerHTML(i) + orderObj.result.order.receipts[i];
         orderObj.result.order.receipts[i] = header + orderObj.result.order.receipts[i] + footer;
       }
     }
-    console.log(orderObj.result.order.receipts.foodrun);
+    //console.log(orderObj.result.order.receipts.foodrun);
     var postData = {
       orderId: 'square',
       foodrunHTML: '',
@@ -263,9 +264,21 @@ const makeReceiptBody = async (orderObj) => {
       dessertHTML: ''
     }
     //postData.foodrunHTML = orderObj.result.order.receipts.foodrun;
+
+    if (orderObj.result.order.fulfillments[0].pickupDetails.scheduleType === "SCHEDULED"){
+      postData.foodrunHTML = `
+        <h4>
+        <p>Order scheduled for:</p>
+        <p><strong>${recipient_name}.</strong></p>
+        <p>Wait to make order!</p>
+        </h4>
+      `;
+      postData.foodrunHTML = header + postData.foodrunHTML + footer;
+    }
     postData.entreeHTML = orderObj.result.order.receipts.entree;
     postData.appHTML = orderObj.result.order.receipts.app;
     postData.dessertHTML = orderObj.result.order.receipts.dessert;
+    console.log(postData);
 
     axios
       .post('https://hook.integromat.com/5ak4j9t3v9n66dvnj0859q5hguq3vc31', postData)
@@ -369,6 +382,12 @@ function getMenu(auth) {
     SQUARE_MENU.push(item);
   }
   console.log("Loaded Menu!")
+  for(let i = 0; i < SQUARE_MENU.length; i++){
+    if(typeof SQUARE_MENU[i].name !== 'undefined'){
+      SQUARE_MENU[i].name = SQUARE_MENU[i].name.toUpperCase();
+    }
+  }
+  //console.log(SQUARE_MENU);
   })
 }
 

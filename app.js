@@ -82,7 +82,8 @@ const getOrderById = async (orderId, shippingInfo, emailAddress) => {
 const getLineItems = async (orderObj) => {
   try {
     for (lineItem of orderObj.result.order.lineItems) {
-      let sheetItem = SQUARE_MENU.find(element => element.name.toUpperCase() === lineItem.name.toUpperCase())
+      console.log(orderObj); 
+      let sheetItem = SQUARE_MENU.find(element => element.name === lineItem.name.toUpperCase())
       if(typeof sheetItem === "undefined"){
         lineItem.printer = '';
         console.log(lineItem.name + " has no entry in the google spreadsheet")
@@ -266,11 +267,13 @@ const makeReceiptBody = async (orderObj) => {
     postData.appHTML = orderObj.result.order.receipts.app;
     postData.dessertHTML = orderObj.result.order.receipts.dessert;
 
+    /*
     axios
       .post('https://hook.integromat.com/5ak4j9t3v9n66dvnj0859q5hguq3vc31', postData)
       .catch(function (error) {
         console.log(error);
       });
+    */
 
 
     //console.log(orderObj.result.order);

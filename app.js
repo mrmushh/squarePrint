@@ -261,10 +261,10 @@ const makeReceiptBody = async (orderObj) => {
       appHTML: '',
       dessertHTML: ''
     }
-    //postData.foodrunHTML = orderObj.result.order.receipts.foodrun += "<h1>DO NOT MAKE</h1>";
-    postData.entreeHTML = orderObj.result.order.receipts.entree += "<h1>DO NOT MAKE</h1>";
-    postData.appHTML = orderObj.result.order.receipts.app += "<h1>DO NOT MAKE</h1>";
-    postData.dessertHTML = orderObj.result.order.receipts.dessert += "<h1>DO NOT MAKE</h1>";
+    //postData.foodrunHTML = orderObj.result.order.receipts.foodrun;
+    postData.entreeHTML = orderObj.result.order.receipts.entree;
+    postData.appHTML = orderObj.result.order.receipts.app;
+    postData.dessertHTML = orderObj.result.order.receipts.dessert;
 
     axios
       .post('https://hook.integromat.com/5ak4j9t3v9n66dvnj0859q5hguq3vc31', postData)

@@ -267,13 +267,11 @@ const makeReceiptBody = async (orderObj) => {
     postData.appHTML = orderObj.result.order.receipts.app;
     postData.dessertHTML = orderObj.result.order.receipts.dessert;
 
-    /*
     axios
       .post('https://hook.integromat.com/5ak4j9t3v9n66dvnj0859q5hguq3vc31', postData)
       .catch(function (error) {
         console.log(error);
       });
-    */
 
 
     //console.log(orderObj.result.order);

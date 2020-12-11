@@ -47,7 +47,7 @@ app.use(bodyParser.json())
 app.post("/", (req, res) => {
   //only if type is payment.updated and processing fee exists
   //MAKE SURE TO ADD CHECK SO NO TWO PAYMENT UPDATES!!!
-  if( (req.body.type === "payment.updated") ) {
+  if( (req.body.type === "payment.created") ) {
     let shippingAddress =  req.body.data.object.payment.shipping_address;
     let emailAddress = req.body.data.object.payment.buyer_email_address;
     let postedOrderId = req.body.data.object.payment.order_id
@@ -265,14 +265,12 @@ const makeReceiptBody = async (orderObj) => {
     postData.entreeHTML = orderObj.result.order.receipts.entree += "<h1>DO NOT MAKE</h1>";
     postData.appHTML = orderObj.result.order.receipts.app += "<h1>DO NOT MAKE</h1>";
     postData.dessertHTML = orderObj.result.order.receipts.dessert += "<h1>DO NOT MAKE</h1>";
-    /*
 
     axios
       .post('https://hook.integromat.com/5ak4j9t3v9n66dvnj0859q5hguq3vc31', postData)
       .catch(function (error) {
         console.log(error);
       });
-    */
 
 
     //console.log(orderObj.result.order);

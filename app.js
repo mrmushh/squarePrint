@@ -17,11 +17,6 @@ const SCOPES = [
 const TOKEN_PATH = 'token.json'
 var SQUARE_MENU = [];
 
-//get menu from sheets
-fs.readFile('credentials.json', (err, content) => {
-  if (err) return console.log('Error loading client secret file:', err);
-  authorize(JSON.parse(content), getMenu);
-});
 //make instance of api client and give it the credentials it needs
 const client = new Client({
   timeout:3000,
@@ -40,8 +35,15 @@ const PORT = (process.env.PORT || 5000)
 app.use(bodyParser.json())
 
 // Start express on the defined port
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`))
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+  fs.readFile('credentials.json', (err, content) => {
+    if (err) return console.log('Error loading client secret file:', err);
+    authorize(JSON.parse(content), getMenu);
+  });
+});
 
+//get menu from sheets on startup
 app.use(bodyParser.json())
 
 app.post("/", (req, res) => {
@@ -191,7 +193,13 @@ const makeReceiptBody = async (orderObj) => {
         pickup = formatAMPM(pickup);
         placed = formatAMPM(placed)
       }
-      console.log(`Placed at: ${placed}, Ready by: ${pickup}, Name: ${recipient_name}, Phone: ${recipient_phone}`);
+      console.log(`
+      Placed at: ${placed}
+      Ready by: ${pickup}
+      Name: ${recipient_name}
+      Phone: ${recipient_phone}
+      -----------------------------
+      `);
     }
     /*
     var mySearch = {
@@ -280,7 +288,7 @@ const makeReceiptBody = async (orderObj) => {
     postData.entreeHTML = orderObj.result.order.receipts.entree;
     postData.appHTML = orderObj.result.order.receipts.app;
     postData.dessertHTML = orderObj.result.order.receipts.dessert;
-    console.log(postData);
+    //console.log(postData);
 
     axios
       .post('https://hook.integromat.com/5ak4j9t3v9n66dvnj0859q5hguq3vc31', postData)

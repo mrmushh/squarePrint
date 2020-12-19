@@ -49,7 +49,9 @@ app.use(bodyParser.json())
 app.post("/", (req, res) => {
   //only if type is payment.updated and processing fee exists
   //MAKE SURE TO ADD CHECK SO NO TWO PAYMENT UPDATES!!!
-  if( (req.body.type === "payment.created") ) {
+  if( (req.body.type === "payment.updated") 
+      && (typeof req.body.data.object.payment.processing_fee !== "undefined")
+      && (req.body.data.object.payment.card_details.status === "CAPTURED" ) ) {
     let shippingAddress =  req.body.data.object.payment.shipping_address;
     let emailAddress = req.body.data.object.payment.buyer_email_address;
     let postedOrderId = req.body.data.object.payment.order_id

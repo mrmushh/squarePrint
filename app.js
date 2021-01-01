@@ -293,7 +293,7 @@ const makeReceiptBody = async (orderObj) => {
     //console.log(postData);
 
     axios
-      .post('https://hook.integromat.com/5ak4j9t3v9n66dvnj0859q5hguq3vc31', postData)
+      .post('https://comedic-woodlouse-4049.dataplicity.io/', postData)
       .catch(function (error) {
         console.log(error);
       });

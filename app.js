@@ -120,6 +120,9 @@ const makeReceiptBody = async (orderObj) => {
       if(typeof lineItem.modifiers === "undefined"){
         lineItem.modifiers = [];
       }
+      if(lineItem.name === "Restaurant Week Set for 2"){
+        lineItem.modifiers.push("Mekong Clams", "Lao Street Noodle", "Spicy Pork Pho", "Kana Hed Krob", "Lod Chong", "Taro Cake");
+      }
 
       let allModsHTML = '';
       //console.log(lineItem.modifiers);

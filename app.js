@@ -295,6 +295,7 @@ const makeReceiptBody = async (orderObj) => {
         postData.foodrunHTML = header + postData.foodrunHTML + footer;
       }
     }
+    postData.foodrunHTML = orderObj.result.order.receipts.foodrun;
     postData.entreeHTML = orderObj.result.order.receipts.entree;
     postData.appHTML = orderObj.result.order.receipts.app;
     postData.dessertHTML = orderObj.result.order.receipts.dessert;

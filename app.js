@@ -128,6 +128,14 @@ const makeReceiptBody = async (orderObj) => {
           lineItem.modifiers.push(mod_obj);
         }
       }
+      if(lineItem.name === "Valentine's Set for 2"){
+        mod_names = ["Shrimp Croquettes", "Violet Floral", "Baan Poo", "Mekong Clams", "Coconut Pandan Cake"]
+        for( let i = 0; i < mod_names.length; i++ ){
+          let mod_obj = {};
+          mod_obj.name = mod_names[i];
+          lineItem.modifiers.push(mod_obj);
+        }
+      }
 
       let allModsHTML = '';
       //console.log(lineItem.modifiers);

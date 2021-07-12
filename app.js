@@ -310,7 +310,7 @@ const makeReceiptBody = async (orderObj) => {
     //console.log(postData);
 
     axios
-      .post('https://a88296ee5e2c.ngrok.io', postData)
+      .post('https://minutely-emu-9286.dataplicity.io/', postData)
       .catch(function (error) {
         console.log(error);
       });
